@@ -3,6 +3,7 @@ const Category = require('../models/model.category');
 
 exports.show_all_books = async (req, res, next) => {
     try {
+        console.log('show all books');
         const books = await Book.find().populate('category');
         res.json(books);
     } catch (err) {

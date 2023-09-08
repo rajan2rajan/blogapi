@@ -4,10 +4,13 @@ const connectDB = require('./app/config/connectDb');
 require('dotenv').config();
 const errorHandler = require('./app/middlewares/middleware.error');
 const success = require('./app/middlewares/middleware.success');
+const isAuth = require('./app/middlewares/middleware.auth');
 connectDB();
 
 app.use(express.json());
+app.use('/auth', require('./app/routers/router.auth.js'));
 app.use('/user', require('./app/routers/router.user.js'));
+// app.use(isAuth);
 app.use('/category', require('./app/routers/router.category.js'));
 app.use('/book', require('./app/routers/router.book.js'));
 

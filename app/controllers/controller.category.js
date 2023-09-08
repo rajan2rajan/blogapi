@@ -1,4 +1,5 @@
 const Category = require('../models/model.category.js');
+const joi = require('joi');
 
 // list all the categories
 exports.show_all_category = async (req, res, next) => {

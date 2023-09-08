@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -11,6 +12,7 @@ const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, 'User email is required'],
+        unique: true,
         trim: true,
         maxLength: [32, 'User email must be less than 32 characters'],
         minLength: [2, 'User email must be more than 2 characters'],
@@ -25,6 +27,11 @@ const UserSchema = new mongoose.Schema({
         enum: ['Admin', 'Customer'],
         default: 'Customer',
     },
+});
+
+UserSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next();
+    this.password = await bcrypt.hash(this.password, 10);
 });
 
 const User = mongoose.model('User', UserSchema);

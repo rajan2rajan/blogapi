@@ -1,10 +1,10 @@
-// name , email , password , role
+// this page is just to create Admin page to create Customer page we use auth controller
 const User = require('../models/model.user');
 
 exports.create_user = async (req, res, next) => {
     try {
-        const { name, email, password, role } = req.body;
-        if (!name || !email || !password || !role) {
+        const { name, email, password, role } = { ...req.body, role: 'Admin' };
+        if (!name || !email || !password) {
             throw new Error('All fields are required');
         }
 
