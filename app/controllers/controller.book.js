@@ -1,11 +1,12 @@
 const Book = require("../models/model.book");
-const uploadFile = require("../config/fileupload");
+const uuid = require("uuid").v4;
 const Category = require("../models/model.category");
+const fs = require("fs/promises");
 
 exports.show_all_books = async (req, res, next) => {
     try {
         console.log("show all books");
-        const books = await Book.find().populate("category");
+        const books = await Book.find().populate("category", "name");
         res.json(books);
     } catch (err) {
         next(err);
@@ -14,17 +15,21 @@ exports.show_all_books = async (req, res, next) => {
 
 exports.create_book = async (req, res, next) => {
     try {
+        const file = req.files.images;
+        const filepath = `/images/${uuid()}.${file.name.split(".").pop()}`;
+        await req.files.images.mv(`app/public${filepath}`);
+        const { name, isbn, price, description, category } = req.body;
         console.log("create book");
-        // const file = req.files?.image;
-        // console.log(file);
-        // const image_name = await uploadFile(file, "images");
-        // const book = new Book({
-        //     ...req.body,
-        //     image_name,
-        //     Slug: req.body.name.replace(/\s+/g, "-").toLowerCase(),
-        // });
-        // console.log(book);
-        // await book.save();
+        await Book.create({
+            name,
+            isbn,
+            price,
+            description,
+            images: filepath,
+            category,
+            Slug: name.replace(/ /g, "-"),
+        });
+
         res.status(200).json({ message: "Book created successfully" });
     } catch (err) {
         next(err);
@@ -33,7 +38,13 @@ exports.create_book = async (req, res, next) => {
 
 exports.delete_book = async (req, res, next) => {
     try {
-        const { id } = req.params.id;
+        const { id } = req.params;
+        const data = await Book.findById(id);
+        const image = data.images;
+        const filepath = `app/public${image}`;
+        if (filepath !== null) {
+            await fs.unlink(filepath);
+        }
         await Book.findByIdAndDelete(id);
         res.status(200).json({ message: "Book deleted successfully" });
     } catch (error) {
@@ -43,9 +54,38 @@ exports.delete_book = async (req, res, next) => {
 
 exports.update_book = async (req, res, next) => {
     try {
-        const { id } = req.params.id;
-        const { name, price, category } = req.body;
-        await Book.findByIdAndUpdate({ _id: id }, { name, price, category });
+        const { id } = req.params;
+        const data = await Book.findById(id).populate("category", "name");
+        const image = data.images;
+        const filepath = `app/public${image}`;
+
+        if (filepath == null) {
+            await Book.findByIdAndUpdate(id, req.body).populate("category", "name");
+            return res.status(200).json({ message: "Book updated successfully" });
+        }
+        if (filepath !== null) {
+            await fs.unlink(filepath);
+        }
+
+        const file = req.files.images;
+        const updated_images = `/images/${uuid()}.${file.name.split(".").pop()}`;
+        await req.files.images.mv(`app/public${updated_images}`);
+
+        const { name, isbn, price, description, category } = req.body;
+        const existingBook = await Book.findById(id).populate("category", "name");
+
+        existingBook.set({
+            name,
+            isbn,
+            price,
+            description,
+            images: updated_images,
+            category,
+            Slug: name.replace(/ /g, "-"),
+        });
+
+        await existingBook.save();
+
         res.status(200).json({ message: "Book updated successfully" });
     } catch (err) {
         next(err);

@@ -8,7 +8,7 @@ const uploadFile = async (file, folder) => {
     } catch (err) {
         await fs.mkdir(`./public/${folder}`);
     } finally {
-        const fileName = `${folder}/${uuid()}.${file.mimetype.split("/")[1]}`;
+        const fileName = `${folder}/${uuid()}.${req.files.images.name.split(".").pop()}`;
         await file.mv(path.join(__dirname, "../../..", "public", fileName));
         return fileName;
     }

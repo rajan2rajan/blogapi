@@ -7,6 +7,7 @@ require("dotenv").config();
 const errorHandler = require("./app/middlewares/middleware.error");
 const success = require("./app/middlewares/middleware.success");
 const isAuth = require("./app/middlewares/middleware.auth");
+const PORT = process.env.PORT || 5000;
 connectDB();
 
 app.use(cors());
