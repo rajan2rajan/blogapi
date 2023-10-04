@@ -15,6 +15,10 @@ router
     .post(blogController.create_book);
 
 //delete update book
-router.route("/:id").delete(blogController.delete_book).put(blogController.update_book);
+router
+    .route("/:id")
+    .delete(blogController.delete_book)
+    .put(blogController.update_book)
+    .get(blogController.show_book_by_id);
 
 module.exports = router;

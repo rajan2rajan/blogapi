@@ -5,9 +5,18 @@ const fs = require("fs/promises");
 
 exports.show_all_books = async (req, res, next) => {
     try {
-        console.log("show all books");
         const books = await Book.find().populate("category", "name");
         res.json(books);
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.show_book_by_id = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const book = await Book.findById(id).populate("category", "name");
+        res.json(book);
     } catch (err) {
         next(err);
     }
@@ -19,7 +28,6 @@ exports.create_book = async (req, res, next) => {
         const filepath = `/images/${uuid()}.${file.name.split(".").pop()}`;
         await req.files.images.mv(`app/public${filepath}`);
         const { name, isbn, price, description, category } = req.body;
-        console.log("create book");
         await Book.create({
             name,
             isbn,
@@ -31,6 +39,7 @@ exports.create_book = async (req, res, next) => {
         });
 
         res.status(200).json({ message: "Book created successfully" });
+        console.log("create book");
     } catch (err) {
         next(err);
     }
