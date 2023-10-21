@@ -21,4 +21,7 @@ router
     .put(blogController.update_book)
     .get(blogController.show_book_by_id);
 
+//search book
+router.get("/search/:search", blogController.search_book);
+
 module.exports = router;

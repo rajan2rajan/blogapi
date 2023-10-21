@@ -5,6 +5,7 @@ const fs = require("fs/promises");
 
 exports.show_all_books = async (req, res, next) => {
     try {
+        console.log("show all books");
         const books = await Book.find().populate("category", "name");
         res.json(books);
     } catch (err) {
@@ -17,6 +18,21 @@ exports.show_book_by_id = async (req, res, next) => {
         const { id } = req.params;
         const book = await Book.findById(id).populate("category", "name");
         res.json(book);
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.search_book = async (req, res, next) => {
+    try {
+        const { search } = req.params;
+        const bookarray = await Book.find().populate("category", "name");
+        const books = bookarray.filter((book) => {
+            const regex = new RegExp(search, "i"); // 'i' flag for case-insensitive search
+            return regex.test(book.name);
+        });
+
+        res.json(books);
     } catch (err) {
         next(err);
     }

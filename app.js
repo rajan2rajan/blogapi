@@ -29,7 +29,7 @@ app.use(expressFileUpload());
 app.use(express.static("app/public"));
 app.use("/auth", require("./app/routers/router.auth.js"));
 app.use("/user", require("./app/routers/router.user.js"));
-// app.use(isAuth);
+app.use(isAuth);
 app.use("/category", require("./app/routers/router.category.js"));
 app.use("/book", require("./app/routers/router.book.js"));
 app.use("/cart", require("./app/routers/router.cart.js"));

@@ -36,7 +36,7 @@ exports.login_user = async (req, res, next) => {
             throw new Error("Incorrect password");
         }
         const access_token = jwt.sign(generatePayload(user), process.env.ACCESS_TOKEN, {
-            expiresIn: "1m",
+            expiresIn: "20m",
         });
         const refresh_token = jwt.sign(generatePayload(user), process.env.REFRESH_TOKEN, {
             expiresIn: "7d",

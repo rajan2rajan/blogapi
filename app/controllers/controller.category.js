@@ -22,8 +22,8 @@ exports.show_single = async (req, res, next) => {
 
 exports.create_category = async (req, res, next) => {
     try {
-        const { name, status } = req.body;
-        const category = await Category.create({ name, status });
+        const { id } = req.body;
+        const category = await Category.create({ ...req.body });
         res.json(category);
         console.log("data inserted sucessfully");
     } catch (err) {
